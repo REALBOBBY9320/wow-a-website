@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>RoboForge AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #29245f 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #3b155e 0%, transparent 35%),
+        #080812;
+      color: white;
+    }
+
+    header {
+      width: 100%;
+      padding: 22px 7%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(15px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: -1px;
+    }
+
+    .logo span {
+      color: #8b5cf6;
+    }
+
+    nav a {
+      color: #aaa;
+      text-decoration: none;
+      margin-left: 25px;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: white;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 90px 20px 50px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 50px;
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.3);
+      color: #b69cff;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: clamp(42px, 7vw, 78px);
+      line-height: 0.95;
+      letter-spacing: -4px;
+      margin-bottom: 25px;
+    }
+
+    h1 span {
+      background: linear-gradient(90deg, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: auto;
+      color: #aaa;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .container {
+      width: min(1100px, 92%);
+      margin: auto;
+      padding-bottom: 80px;
+    }
+
+    .generator {
+      background: rgba(255,255,255,0.045);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 25px;
+      padding: 30px;
+      backdrop-filter: blur(20px);
+      margin-bottom: 25px;
+    }
+
+    .generator h2 {
+      margin-bottom: 8px;
+      font-size: 25px;
+    }
+
+    .description {
+      color: #999;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      background: #11111d;
+      border: 1px solid #29293a;
+      color: white;
+      padding: 15px;
+      border-radius: 12px;
+      outline: none;
+      font-size: 15px;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: #8b5cf6;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 14px 20px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .primary {
+      background: linear-gradient(90deg, #7c3aed, #a855f7);
+    }
+
+    .secondary {
+      background: #20202e;
+      border: 1px solid #343447;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    .result {
+      display: none;
+      margin-top: 25px;
+      padding: 22px;
+      background: #0d0d18;
+      border-radius: 16px;
+      border: 1px solid #27273a;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result h3 {
+      margin-bottom: 12px;
+    }
+
+    .result-content {
+      color: #ccc;
+      line-height: 1.7;
+      white-space: pre-line;
+    }
+
+    .name-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .name {
+      padding: 15px;
+      background: #171725;
+      border-radius: 10px;
+      border: 1px solid #29293a;
+    }
+
+    .thumbnail-preview {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(124,58,237,0.9),
+          rgba(236,72,153,0.8)
+        );
+
+      font-size: clamp(20px, 4vw, 45px);
+      font-weight: 900;
+      text-shadow: 0 4px 15px black;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-top: 40px;
+    }
+
+    .feature {
+      padding: 25px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 18px;
+    }
+
+    .feature-icon {
+      font-size: 30px;
+      margin-bottom: 15px;
+    }
+
+    .feature h3 {
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      color: #999;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      color: #777;
+    }
+
+    @media (max-width: 700px) {
+      nav {
+        display: none;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding-top: 60px;
+      }
+
+      .generator {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Robo<span>Forge</span> AI</div>
+
+  <nav>
+    <a href="#ideas">Ideas</a>
+    <a href="#names">Names</a>
+    <a href="#thumbnails">Thumbnails</a>
+  </nav>
+</header>
+
+
+<section class="hero">
+
+  <div class="badge">✨ AI tools for Roblox creators</div>
+
+  <h1>
+    Build your next<br>
+    <span>Roblox game.</span>
+  </h1>
+
+  <p>
+    Generate game ideas, catchy game names and thumbnail concepts
+    for your next Roblox project.
+  </p>
+
+</section>
+
+
+<div class="container">
+
+  <!-- GAME IDEA GENERATOR -->
+
+  <section class="generator" id="ideas">
+
+    <h2>🎮 Game Idea Generator</h2>
+
+    <p class="description">
+      Describe the type of Roblox game you want to create.
+    </p>
+
+    <label>What kind of game do you want?</label>
+
+    <textarea
+      id="ideaInput"
+      placeholder="Example: A survival game on a mysterious island..."
+    ></textarea>
+
+    <div class="button-row">
+
+      <button
+        class="primary"
+        onclick="generateIdea()">
+        ✨ Generate Game Idea
+      </button>
+
+      <button
+        class="secondary"
+        onclick="clearBox('ideaInput', 'ideaResult')">
+        Clear
+      </button>
+
+    </div>
+
+    <div class="result" id="ideaResult">
+
+      <h3>Your Game Idea</h3>
+
+      <div
+        class="result-content"
+        id="ideaOutput">
+      </div>
+
+      <br>
+
+      <button
+        class="secondary"
+        onclick="copyText('ideaOutput')">
+        📋 Copy
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- NAME GENERATOR -->
+
+  <section class="generator" id="names">
+
+    <h2>🏷️ Game Name Generator</h2>
+
+    <p class="description">
+      Generate catchy names based on your game concept.
+    </p>
+
+    <label>Game concept</label>
+
+    <input
+      id="nameInput"
+      placeholder="Example: Zombie survival game"
+    />
+
+    <div class="button-row">
+
+      <button
+        class="primary"
+        onclick="generateNames()">
+        🚀 Generate Names
+      </button>
+
+    </div>
+
+    <div class="result" id="nameResult">
+
+      <h3>Generated Names</h3>
+
+      <div
+        class="name-list"
+        id="nameOutput">
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- THUMBNAIL GENERATOR -->
+
+  <section class="generator" id="thumbnails">
+
+    <h2>🎨 Roblox Thumbnail Generator</h2>
+
+    <p class="description">
+      Describe your game and create a thumbnail concept.
+    </p>
+
+    <label>Game description</label>
+
+    <textarea
+      id="thumbnailInput"
+      placeholder="Example: A scary Roblox horror game in an abandoned school..."
+    ></textarea>
+
+    <label>Thumbnail style</label>
+
+    <select id="styleInput">
+
+      <option>Epic</option>
+      <option>Funny</option>
+      <option>Horror</option>
+      <option>Cartoon</option>
+      <option>Adventure</option>
+      <option>Competitive</option>
+
+    </select>
+
+    <button
+      class="primary"
+      onclick="generateThumbnail()">
+      🎨 Generate Thumbnail
+    </button>
+
+
+    <div class="result" id="thumbnailResult">
+
+      <h3>Thumbnail Concept</h3>
+
+      <div
+        class="thumbnail-preview"
+        id="thumbnailPreview">
+      </div>
+
+      <div
+        class="result-content"
+        id="thumbnailOutput">
+      </div>
+
+      <br>
+
+      <button
+        class="secondary"
+        onclick="copyText('thumbnailOutput')">
+        📋 Copy Prompt
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- FEATURES -->
+
+  <section class="features">
+
+    <div class="feature">
+
+      <div class="feature-icon">💡</div>
+
+      <h3>Game Ideas</h3>
+
+      <p>
+        Turn a simple concept into a complete Roblox
+        game idea with gameplay mechanics and features.
+      </p>
+
+    </div>
+
+
+    <div class="feature">
+
+      <div class="feature-icon">🏷️</div>
+
+      <h3>Game Names</h3>
+
+      <p>
+        Generate memorable names that fit the theme
+        of your Roblox game.
+      </p>
+
+    </div>
+
+
+    <div class="feature">
+
+      <div class="feature-icon">🎨</div>
+
+      <h3>Thumbnails</h3>
+
+      <p>
+        Create detailed thumbnail concepts and prompts
+        for your game's artwork.
+      </p>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<footer>
+
+  RoboForge AI — Built for Roblox creators.
+
+</footer>
+
+
+<script>
+
+function generateIdea() {
+
+  const input =
+    document.getElementById("ideaInput").value.trim();
+
+  if (!input) {
+
+    alert("Please describe your game first.");
+
+    return;
+
+  }
+
+  const result =
+`🎮 GAME CONCEPT
+
+${input}
+
+🎯 GAMEPLAY LOOP
+
+Players enter the world and complete objectives while
+unlocking new areas, abilities and items.
+
+⭐ CORE FEATURES
+
+• Level progression
+• Coins and rewards
+• Unlockable items
+• Daily challenges
+• Leaderboards
+• Multiplayer gameplay
+
+🔥 RETENTION IDEA
+
+Add quests and limited-time events that give players
+a reason to return every day.
+
+💰 OPTIONAL MONETIZATION
+
+• Cosmetic items
+• Game passes
+• Special effects
+• Private servers
+
+🚀 UPDATE IDEAS
+
+• New maps
+• New characters
+• New bosses
+• Seasonal events
+• New weapons/items`;
+
+  document.getElementById("ideaOutput").textContent = result;
+
+  document.getElementById("ideaResult").classList.add("show");
+
+}
+
+
+function generateNames() {
+
+  const input =
+    document.getElementById("nameInput").value.trim();
+
+  if (!input) {
+
+    alert("Enter a game concept first.");
+
+    return;
+
+  }
+
+  const names = [
+
+    "Ultimate " + input,
+
+    input + " Simulator",
+
+    input + " Tycoon",
+
+    "Escape: " + input,
+
+    input + " Legends",
+
+    "The " + input,
+
+    input + " Adventures",
+
+    "Survive " + input,
+
+    input + " Battlegrounds",
+
+    input + " World"
+
+  ];
+
+  const output =
+    document.getElementById("nameOutput");
+
+  output.innerHTML = "";
+
+  names.forEach(name => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "name";
+
+    div.textContent = name;
+
+    output.appendChild(div);
+
+  });
+
+  document
+    .getElementById("nameResult")
+    .classList.add("show");
+
+}
+
+
+function generateThumbnail() {
+
+  const input =
+    document.getElementById("thumbnailInput").value.trim();
+
+  const style =
+    document.getElementById("styleInput").value;
+
+  if (!input) {
+
+    alert("Describe your game first.");
+
+    return;
+
+  }
+
+  const prompt =
+`Create a ${style.toLowerCase()} Roblox game thumbnail for:
+
+"${input}"
+
+Use a dramatic composition with Roblox-style characters,
+strong lighting, an exciting background, clear focal point,
+high contrast, expressive characters and a professional
+game-promotion look.
+
+Leave enough space for a large readable game title.`;
+
+  document
+    .getElementById("thumbnailOutput")
+    .textContent = prompt;
+
+  document
+    .getElementById("thumbnailPreview")
+    .textContent = input;
+
+  document
+    .getElementById("thumbnailResult")
+    .classList.add("show");
+
+}
+
+
+function copyText(id) {
+
+  const text =
+    document.getElementById(id).textContent;
+
+  navigator.clipboard.writeText(text);
+
+  alert("Copied!");
+
+}
+
+
+function clearBox(inputId, resultId) {
+
+  document.getElementById(inputId).value = "";
+
+  document
+    .getElementById(resultId)
+    .classList.remove("show");
+
+}
+
+</script>
+
+</body>
+</html>
